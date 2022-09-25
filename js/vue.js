@@ -1,18 +1,33 @@
 /*
  * @Author: Jackie
  * @Date: 2022-09-25 10:36:58
- * @LastEditTime: 2022-09-25 10:54:19
+ * @LastEditTime: 2022-09-25 11:12:35
  * @LastEditors: Jackie
  * @Description: vue源码 - 刨析
- * @FilePath: /Vue-源码解析/vue.js
+ * @FilePath: /Vue-源码解析/js/vue.js
  * @version: 
  */
 class Vue {
     constructor(options) {
         console.log(options);
-        this.$el = document.querySelector(options.el);
+        if (typeof options.beforeCreate == 'function') {
+            options.beforeCreate.bind(this)();
+        }
+        // data挂载 数据
         this.$data = options.data || {};
+        if (typeof options.created == 'function') {
+            options.created.bind(this)();
+        }
+        if (typeof options.beforeMount == 'function') {
+            options.beforeMount.bind(this)();
+        }
+        // el挂载 节点
+        this.$el = document.querySelector(options.el);
+        // 模板解析
         this.compile(this.$el);
+        if (typeof options.mounted == 'function') {
+            options.mounted.bind(this)();
+        }
     };
     // 解析
     compile(node) {
