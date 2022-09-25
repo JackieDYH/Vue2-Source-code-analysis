@@ -1,7 +1,7 @@
 /*
  * @Author: Jackie
  * @Date: 2022-09-25 10:36:58
- * @LastEditTime: 2022-09-25 13:06:59
+ * @LastEditTime: 2022-09-25 13:20:25
  * @LastEditors: Jackie
  * @Description: vue源码 - 刨析
  * @FilePath: /Vue-源码解析/js/vue.js
@@ -11,11 +11,13 @@ class Vue {
     constructor(options) {
         console.log(options);
         this.$options = options || {};
+
         if (typeof options.beforeCreate == 'function') {
             options.beforeCreate.bind(this)();
         }
         // data挂载 数据
         this.$data = options.data || {};
+        this.proxyData();
         if (typeof options.created == 'function') {
             options.created.bind(this)();
         }
@@ -30,6 +32,19 @@ class Vue {
             options.mounted.bind(this)();
         }
     };
+    // 1 给vue大对象赋值，来自data （data和vue中的保持双向绑定 - 劫持）
+    proxyData() {
+        for (let key in this.$data) {
+            Object.defineProperty(this, key, {
+                get() {
+                    return this.$data[key];
+                },
+                set(val) {
+                    this.$data[key] = val;
+                }
+            });
+        }
+    }
     // 解析
     compile(node) {
         console.log('node:', node);
