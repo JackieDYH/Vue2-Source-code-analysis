@@ -1,7 +1,7 @@
 /*
  * @Author: Jackie
  * @Date: 2022-09-25 10:36:58
- * @LastEditTime: 2022-09-25 11:12:35
+ * @LastEditTime: 2022-09-25 13:06:59
  * @LastEditors: Jackie
  * @Description: vue源码 - 刨析
  * @FilePath: /Vue-源码解析/js/vue.js
@@ -10,6 +10,7 @@
 class Vue {
     constructor(options) {
         console.log(options);
+        this.$options = options || {};
         if (typeof options.beforeCreate == 'function') {
             options.beforeCreate.bind(this)();
         }
@@ -35,7 +36,21 @@ class Vue {
         node.childNodes.forEach((item, index) => {
             // 元素节点
             if (item.nodeType == 1) {
-                this.compile(item);
+                // 判断元素节点是否绑定了@click
+                if (item.hasAttribute('@click')) {
+                    // 节点@click后绑定的属性值
+                    let vmKey = item.getAttribute('@click').trim();
+                    item.addEventListener('click', (event) => {
+                        // 方式一
+                        // this.$options.methods[vmKey].bind(this, event)();
+                        this.eventFn = this.$options.methods[vmKey].bind(this);
+                        this.eventFn(event);
+                    });
+
+                }
+                if (item.childNodes.length > 0) {
+                    this.compile(item);
+                }
             }
 
             // 文本节点 如果有{{}}就替换数据

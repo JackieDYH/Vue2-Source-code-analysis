@@ -13,6 +13,7 @@
     <div id="app">
         <h1>{{str}}-{{str}}</h1>
         {{str}}
+        <button @click="btn">按钮</button>
     </div>
     <script src="./js/vue.js"></script>
     <script>
@@ -32,6 +33,11 @@
             },
             mounted() {
                 console.log("mounted", this.$el, this.$data);
+            },
+            methods: {
+                btn(e) {
+                    console.log("btn", e, this.$data.str);
+                }
             },
             beforeUpdate() {
                 console.log("beforeUpdate");
